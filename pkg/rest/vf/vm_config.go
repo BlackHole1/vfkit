@@ -2,6 +2,7 @@ package rest
 
 import (
 	"net/http"
+	"strings"
 
 	"github.com/Code-Hex/vz/v3"
 	"github.com/crc-org/vfkit/pkg/rest/define"
@@ -59,4 +60,24 @@ func (vm *VzVirtualMachine) SetVMState(c *gin.Context) {
 		return
 	}
 	c.Status(http.StatusAccepted)
+}
+
+func (vm *VzVirtualMachine) CanOperate(c *gin.Context) {
+	var p = struct {
+		Op string `uri:"operate" binding:"required"`
+	}{}
+
+	if err := c.ShouldBindUri(&p); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	can, err := vm.CanChangeState(define.StateChange(strings.Title(p.Op)))
+	if err != nil {
+		logrus.Errorf("failed to check operation %s: %q", p.Op, err)
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"can": can})
 }

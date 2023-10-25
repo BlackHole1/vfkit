@@ -53,3 +53,41 @@ func (vm *VzVirtualMachine) HardStop() error {
 	logrus.Debug("force stopping machine")
 	return vm.VzVM.Stop()
 }
+
+func (vm *VzVirtualMachine) CanChangeState(s define.StateChange) (bool, error) {
+	switch s {
+	case define.Pause:
+		return vm.CanPause(), nil
+	case define.Resume:
+		return vm.CanResume(), nil
+	case define.Stop:
+		return vm.CanStop(), nil
+	case define.HardStop:
+		return vm.CanHardStop(), nil
+	default:
+		return false, fmt.Errorf("invalid state: %s", s)
+	}
+}
+
+func (vm *VzVirtualMachine) CanPause() bool {
+	can := vm.VzVM.CanPause()
+	logrus.Debug("can pause: ", can)
+	return can
+}
+
+func (vm *VzVirtualMachine) CanResume() bool {
+	can := vm.VzVM.CanResume()
+	logrus.Debug("can resume: ", can)
+	return can
+}
+
+func (vm *VzVirtualMachine) CanStop() bool {
+	can := vm.VzVM.CanRequestStop()
+	logrus.Debug("can stop: ", can)
+	return can
+}
+
+func (vm *VzVirtualMachine) CanHardStop() bool {
+	logrus.Debug("can hard top: ", true)
+	return true
+}

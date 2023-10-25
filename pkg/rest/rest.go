@@ -71,7 +71,7 @@ func (v *VFKitService) Start() {
 }
 
 // NewServer creates a new restful service
-func NewServer(inspector VirtualMachineInspector, stateHandler VirtualMachineStateHandler, endpoint string) (*VFKitService, error) {
+func NewServer(inspector VirtualMachineInspector, stateHandler VirtualMachineStateHandler, canOperation VirtualMachineCanOperationHandler, endpoint string) (*VFKitService, error) {
 	r := gin.Default()
 	ep, err := NewEndpoint(endpoint)
 	if err != nil {
@@ -86,6 +86,7 @@ func NewServer(inspector VirtualMachineInspector, stateHandler VirtualMachineSta
 	r.GET("/vm/state", stateHandler.GetVMState)
 	r.POST("/vm/state", stateHandler.SetVMState)
 	r.GET("/vm/inspect", inspector.Inspect)
+	r.GET("/vm/can/:operate", canOperation.CanOperate)
 	return &s, nil
 }
 
@@ -96,6 +97,10 @@ type VirtualMachineInspector interface {
 type VirtualMachineStateHandler interface {
 	GetVMState(c *gin.Context)
 	SetVMState(c *gin.Context)
+}
+
+type VirtualMachineCanOperationHandler interface {
+	CanOperate(c *gin.Context)
 }
 
 // parseRestfulURI validates the input URI and returns an URL object

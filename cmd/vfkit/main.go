@@ -135,7 +135,7 @@ func runVFKit(vmConfig *config.VirtualMachine, opts *cmdline.Options) error {
 	// Do not enable the rests server if user sets scheme to None
 	if opts.RestfulURI != cmdline.DefaultRestfulURI {
 		restVM := restvf.NewVzVirtualMachine(vm, vzVMConfig)
-		srv, err := rest.NewServer(restVM, restVM, opts.RestfulURI)
+		srv, err := rest.NewServer(restVM, restVM, restVM, opts.RestfulURI)
 		if err != nil {
 			return err
 		}

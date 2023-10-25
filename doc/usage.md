@@ -365,6 +365,16 @@ POST `/vm/state` {"new_state": "new value"}
 
 Response: http 200
 
+### Can Change VM State
+
+Check if the virtual machine can be changed to the specified state.
+
+GET `/vm/can/:operate`
+
+operate: pause, resume, stop, hardStop
+
+Response: { "can": bool }
+
 ### Inspect VM
 
 Get description of the virtual machine
